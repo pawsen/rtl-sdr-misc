@@ -140,6 +140,10 @@ def duration_parse(s):
 def date_parse(s):
     if '-' not in s:
         return datetime.datetime.fromtimestamp(int(s))
+    if '.' in s:
+        # trying to find a graceful way to handle microseconds from hackrf_sweep
+        #return datetime.datetime.strptime(s.split(".")[0], '%Y-%m-%d %H:%M:%S')
+        return datetime.datetime.strptime(s, '%Y-%m-%d %H:%M:%S.%f')
     return datetime.datetime.strptime(s, '%Y-%m-%d %H:%M:%S')
 
 def palette_parse(s):
