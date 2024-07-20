@@ -1,0 +1,47 @@
+#+title: Readme
+
+* FM Test
+
+https://web.archive.org/web/20230603213739/http://kmkeen.com/rtl-demod-guide/
+https://web.archive.org/web/20230603214559/http://kmkeen.com/rtl-power/
+
+#+begin_src sh
+rtl_power -f 88M:92M:10k -i 1s -e 10m -g 24 fm_stations.csv
+#+end_src
+Where
+(-e 10m: exit after 10 min, -g 24: gain 24dB, -i 1s: 1s integration interval)
+
+OR
+#+begin_src sh
+rtl_power -f 88M:108M:125k -e 10m -g 24 fm_stations.csv
+#+end_src
+creates 160 bins across the FM band, individual stations should be visible. The default integration time is ~-i 10s~.
+
+The device have discrete gain levels, found by
+#+begin_src sh
+rtl_test -t
+#+end_src
+
+#+begin_example
+Using device 0: Generic RTL2832U OEM
+Found Rafael Micro R828D tuner
+Supported gain values (29): 0.0 0.9 1.4 2.7 3.7 7.7 8.7 12.5 14.4 15.7 16.6 19.7 20.7 22.9 25.4 28.0 29.7 32.8 33.8 36.4 37.2 38.6 40.2 42.1 43.4 43.9 44.5 48.0 49.6
+Sampling at 2048000 S/s.
+#+end_example
+
+with =-g 24= the actual gain will be ~22.9~.
+
+Plot the heatmap
+#+begin_src sh
+python heatmap.py fm_stations.csv fm_stations.png
+# OR (for alternative SUPERIOR coloring scheme)
+python heatmap.py --ytick 1s --palette charolastra fm_stations.csv fm_stations.png
+#+end_src
+
+* TODO
+Try to add ~-c <crop_percent>~, fx. ~-c 20%~.
+#+begin_example
+The crop sets how much of the bandwidth should be discarded. 0% discards nothing, 100% discards everything. The edges of the spectrum are lower quality than the middle. There is less sensitivity, gain roll-off and out-of-band aliasing. Higher values of crop will produce a better spectrum, but do so more slowly. Values may be a decimal (-c 0.1) or a percent (-c 10%). Default crop is 0%, suggested crop is between 20% and 50%.
+
+This setting has no effect on bins larger than 1MHz.
+#+end_example
